@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useQuery, useMutation, gql } from '@apollo/client';
 
 const GET_TODOS = gql`
@@ -35,13 +35,46 @@ const ADD_TODO = gql`
   }
 `;
 
+const DELETE_TODO = gql`
+  mutation deleteTodo($id: uuid!) {
+    delete_todos(where: {id: {_eq: $id}}) {
+      returning {
+        done
+        id
+        text
+      }
+    }
+  }
+`
+
 function App() {
+  const [todoText, setTodoText] = useState('');
+  
   const { data, loading, error } = useQuery(GET_TODOS);
   const [toggleTodo] = useMutation(TOGGLE_TODO);
-  const [addTodo] = useMutation(ADD_TODO);
+  const [addTodo] = useMutation(ADD_TODO, {
+    onCompleted: () => setTodoText('')
+  });
+  const [deleteTodo] = useMutation(DELETE_TODO);
 
   function handleToggleTodo({ id, done }) {
     toggleTodo({ variables: { id, done: !done } })
+  }
+
+  function handleAddTodo(e) {
+    e.preventDefault();
+    if(!todoText.trim()) return;
+    addTodo({ variables: { text: todoText },
+              refetchQueries: [
+                { query: GET_TODOS }
+              ]})
+  }
+
+  function handleDeleteTodo(todo) {
+    deleteTodo({ variables: { id: todo.id },
+                 refetchQueries: [
+                  { query: GET_TODOS }
+                 ]})
   }
 
   if (loading) return <div>Loading todos...</div>
@@ -54,11 +87,13 @@ function App() {
       GraphQL Todo List
       <span role="img" aria-label="Checkmark"> ✅</span>
       </h1>
-      <form className="mb3">
+      <form className="mb3" onSubmit={handleAddTodo}>
         <input
           className="pa2 f4"
           type="text"
           placeholder="Enter a todo"
+          onChange={e => setTodoText(e.target.value)}
+          value={todoText}
         />
         <button className="pa2 f4 bg-green" type="submit">Create</button>
       </form>
@@ -66,7 +101,7 @@ function App() {
         {data.todos.map(todo => (
           <p onDoubleClick={() => handleToggleTodo(todo)} key={todo.id}>
             <span className={`pointer list pa3 f3 ${todo.done && 'strike'}`}>{todo.text}</span>
-            <button className="bg-transparent bn f4">
+            <button onClick={() => handleDeleteTodo(todo)} className="bg-transparent bn f4">
               <span className="red">&times;</span>
             </button>
           </p>
