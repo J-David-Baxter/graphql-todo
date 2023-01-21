@@ -9,7 +9,7 @@ const httpLink = createHttpLink({
 })
 
 const authLink = setContext((_, { headers }) => {
-  const token = '8D1Th4jDKY7m4erOSEzl41vvG4wEZ8mJMao9lCt40evLUEu7gQC30wVp2n81DMth';
+  const token = process.env.REACT_APP_TOKEN
   return {
     headers: {
       ...headers,
