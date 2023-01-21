@@ -24,9 +24,7 @@ function App() {
     <div className="vh-100 code flex flex-column items-center bg-purple white pa3 fl-1">
       <Header />
       <CreateTodo GET_TODOS={GET_TODOS}/>
-      <div className="flex items-center justify-center flex-column">
-        <TodoList data={data} GET_TODOS={GET_TODOS}/>
-      </div>
+      <TodoList data={data} GET_TODOS={GET_TODOS}/>
     </div>
   );
 }
