@@ -70,11 +70,14 @@ function App() {
               ]})
   }
 
-  function handleDeleteTodo(todo) {
-    deleteTodo({ variables: { id: todo.id },
-                 refetchQueries: [
-                  { query: GET_TODOS }
-                 ]})
+  function handleDeleteTodo({ id }) {
+    const isConfirmed = window.confirm('Do you want to delete this todo?');
+    if (isConfirmed) {
+      deleteTodo({ variables: { id },
+        refetchQueries: [
+         { query: GET_TODOS }
+        ]})
+    }
   }
 
   if (loading) return <div>Loading todos...</div>
@@ -100,7 +103,7 @@ function App() {
       <div className="flex items-center justify-center flex-column">
         {data.todos.map(todo => (
           <p onDoubleClick={() => handleToggleTodo(todo)} key={todo.id}>
-            <span className={`pointer list pa3 f3 ${todo.done && 'strike'}`}>{todo.text}</span>
+            <span className={`pointer list pa3 f3 ${todo.done && 'strike'}`} style={{ userSelect: 'none' }}>{todo.text}</span>
             <button onClick={() => handleDeleteTodo(todo)} className="bg-transparent bn f4">
               <span className="red">&times;</span>
             </button>
