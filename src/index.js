@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
-import { ApolloClient, InMemoryCache, ApolloProvider, gql, createHttpLink } from '@apollo/client';
+import { ApolloClient, InMemoryCache, ApolloProvider, createHttpLink } from '@apollo/client';
 import {setContext} from '@apollo/client/link/context';
 
 const httpLink = createHttpLink({
@@ -23,19 +23,9 @@ const client = new ApolloClient({
   cache: new InMemoryCache()
 })
 
-client.query({
-  query: gql`
-    query getTodos {
-      todos {
-        done
-        id
-        text
-      }
-    }
-  `
-}).then((data) => console.log(data));
-
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <App />
+  <ApolloProvider client={client}>
+    <App />
+  </ApolloProvider>
 );
