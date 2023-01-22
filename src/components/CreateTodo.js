@@ -35,6 +35,7 @@ const CreateTodo = ({ GET_TODOS }) => {
           className="pa2 f4"
           type="text"
           placeholder="Enter a todo"
+          maxLength="30"
           onChange={e => setTodoText(e.target.value)}
           value={todoText}
         />
